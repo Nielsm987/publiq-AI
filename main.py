@@ -18,7 +18,9 @@ def generate_image(description):
                 "Authorization": f'Key {os.getenv("FAL_ID_SECRET")}',
                 "Content-Type": "application/json",
             },
-            data=json.dumps({"prompt": description, "num_images": 3}),
+            data=json.dumps(
+                {"prompt": description, "num_images": 3, "image_format": "jpeg"}
+            ),
         )
         return response.json()
     except requests.exceptions.RequestException:

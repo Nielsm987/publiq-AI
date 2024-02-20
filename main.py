@@ -18,7 +18,7 @@ def generate_image(description):
                 "Authorization": f'Key {os.getenv("FAL_ID_SECRET")}',
                 "Content-Type": "application/json",
             },
-            data=json.dumps({"prompt": description}),
+            data=json.dumps({"prompt": description, "num_images": 3}),
         )
         return response.json()
     except requests.exceptions.RequestException:
@@ -32,10 +32,20 @@ def index():
         data = {}
         for key, value in form_data.items():
             data[key] = value
-        image_url = generate_image(data["beschrijving"])["images"][0]["url"]
-        return '<img src="' + image_url + '"/>'
+        images = generate_image(data["beschrijving"])["images"]
+        image_tags = []
+        for image in images:
+            image_url = image["url"]
+            image_tags.append('<img style="width: 30%" src="' + image_url + '" />')
+        joined_image_tags = "".join(image_tags)
 
-    print()
+        print(joined_image_tags)
+        return (
+            '<div style="display: flex; width: 100%; justify-content: space-between">'
+            + joined_image_tags
+            + "</div>"
+        )
+
     return render_template("form.html")
 
 

@@ -40,9 +40,16 @@ def generate_image(description):
                 "Content-Type": "application/json",
             },
             data=json.dumps(
-                {"prompt": description, "num_images": 3, "image_format": "jpeg"}
+                {
+                    "prompt": description,
+                    "negative_prompt": "cartoon, painting, illustration, (worst quality, low quality, normal quality:2)",
+                    "num_inference_steps": 50,
+                    "num_images": 3,
+                    "image_format": "jpeg",
+                }
             ),
         )
+        print(response.json())
         return response.json()
     except requests.exceptions.RequestException:
         print("HTTP Request failed")
@@ -56,7 +63,6 @@ def index():
         for key, value in form_data.items():
             data[key] = value
 
-        # Construct the prompt based on the form inputs
         prompt = f"Genereer een fotorealistische afbeelding met respect voor lichaamsverhoudingen voor een evenement met als titel '{data['naam-evenement']}'"
         prompt += (
             f" het evenement kan als volgt beschreven worden '{data['beschrijving']}'"

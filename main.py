@@ -10,24 +10,16 @@ import os
 app = Flask(__name__)
 
 
-def is_winter(date_str):
+def get_season(date_str):
     date = datetime.strptime(date_str, "%b %d, %Y")
-    return date.month in [12, 1, 2]
-
-
-def is_summer(date_str):
-    date = datetime.strptime(date_str, "%b %d, %Y")
-    return date.month in [6, 7, 8]
-
-
-def is_autumn(date_str):
-    date = datetime.strptime(date_str, "%b %d, %Y")
-    return date.month in [9, 10, 11]
-
-
-def is_spring(date_str):
-    date = datetime.strptime(date_str, "%b %d, %Y")
-    return date.month in [3, 4, 5]
+    if date.month in [12, 1, 2]:
+        return "winter"
+    elif date.month in [6, 7, 8]:
+        return "summer"
+    elif date.month in [9, 10, 11]:
+        return "autumn"
+    elif date.month in [3, 4, 5]:
+        return "spring"
 
 
 def generate_image(description):
@@ -42,7 +34,7 @@ def generate_image(description):
             data=json.dumps(
                 {
                     "prompt": description,
-                    "negative_prompt": "cartoon, painting, illustration, (worst quality, low quality, normal quality:2)",
+                    "negative_prompt": "cartoon, painting, illustration, bad anatomy, disfigured, extra limbs, mutated, deformed, long neck (worst quality, low quality, normal quality:2)",
                     "num_inference_steps": 50,
                     "num_images": 3,
                     "image_format": "jpeg",
@@ -63,12 +55,7 @@ def index():
         for key, value in form_data.items():
             data[key] = value
 
-        prompt = f"Genereer een fotorealistische afbeelding met respect voor lichaamsverhoudingen voor een evenement met als titel '{data['naam-evenement']}'"
-        prompt += (
-            f" het evenement kan als volgt beschreven worden '{data['beschrijving']}'"
-        )
-        prompt += f" op de afbeeldingen moeten personen van de leeftijdscategorie '{data['geschikt-voor']}' te zien zijn met een gemengde etnische afkomst"
-        prompt += f" op de afbeeldingen moet je zien dat het {'winter' if is_winter(data['begindatum']) else 'zomer' if is_summer(data['begindatum']) else 'herfst' if is_autumn(data['begindatum']) else 'lente'} is"
+        prompt = f"Genereer een fotorealistische afbeelding met respect voor lichaamsverhoudingen voor een evenement met als titel '{data['naam-evenement']}' het evenement kan het evenement kan als volgt beschreven worden '{data['beschrijving']}' op de afbeeldingen moeten personen van de leeftijdscategorie '{data['geschikt-voor']}' te zien zijn met een gemengde etnische afkomst op de afbeeldingen moet je zien dat het {'winter' if get_season(data['begindatum']) == 'winter' else 'zomer' if get_season(data['begindatum']) == 'summer' else 'herfst' if get_season(data['begindatum']) == 'autumn' else 'lente'} is"
 
         print(prompt)
 

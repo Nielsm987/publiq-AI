@@ -34,7 +34,7 @@ def generate_image(description):
 
     try:
         response = requests.post(
-            url="https://fal.run/fal-ai/fast-sdxl",
+            url="https://fal.run/fal-ai/fooocus",
             headers={
                 "Authorization": f'Key {os.getenv("FAL_ID_SECRET")}',
                 "Content-Type": "application/json",

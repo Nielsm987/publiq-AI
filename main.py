@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 import requests
 import json
 from datetime import datetime
+from deep_translator import GoogleTranslator
+
 
 load_dotenv()
 import os
@@ -69,7 +71,12 @@ def index():
         for key, value in form_data.items():
             data[key] = value
 
-        prompt = f"Genereer een fotorealistische afbeelding met respect voor lichaamsverhoudingen voor een evenement met als titel '{data['naam-evenement']}' het evenement kan als volgt beschreven worden '{data['beschrijving']}' op de afbeeldingen moeten personen van de leeftijdscategorie '{data['geschikt-voor']}' te zien zijn met een gemengde etnische afkomst op de afbeeldingen moet je zien dat het {'winter' if get_season(data['begindatum']) == 'winter' else 'zomer' if get_season(data['begindatum']) == 'summer' else 'herfst' if get_season(data['begindatum']) == 'autumn' else 'lente'} is"
+        pre_prompt = "wide angle shot, daylight, warm-toned, 35mm, --ar 4:3, --s 250, natural lighting, realistic faces, realistic bodies, sharp focus, sport shooting, dynamic range, wide shot, "
+        input_prompt = f"Evenement voor '{data['naam-evenement']}', evenementbeschrijving '{data['beschrijving']}' personen van leeftijdscategorie '{data['geschikt-voor']}', personen van diverse etnische afkomst, weersomstandigheden zijn volgens het seizoen {'winter' if get_season(data['begindatum']) == 'winter' else 'zomer' if get_season(data['begindatum']) == 'summer' else 'herfst' if get_season(data['begindatum']) == 'autumn' else 'lente'},"
+        base_prompt = f"{pre_prompt}, {input_prompt}"
+        prompt = GoogleTranslator(source="nl", target="en").translate(base_prompt)
+
+        print(prompt)
 
         image_urls = []
         image_tags = []
@@ -97,7 +104,7 @@ def index():
 
         for index, image in enumerate(image_urls):
             image_tags.append(
-                f'<div id="{image["endpoint"]}§{index}" style="display: flex; flex-direction: column; width: 30%"><img src="{image["url"]}" /><p>{image["endpoint"]}</p><button type="submit" hx-post="/{image["endpoint"]}§{index}" hx-target="#{image["endpoint"]}§{index}">nieuw</button></div>'
+                f'<div id="{image["endpoint"]}§{index}" style="display: flex; flex-direction: column; width: 30%"><img src="{image["url"]}" /><p>{image["endpoint"]}</p><button type="submit" hx-post="/{image["endpoint"]}§{index}" hx-target="#{image["endpoint"]}§{index}"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#0ea5e9"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-reload"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747" /><path d="M20 4v5h-5" /></svg></button></div>'
             )
 
         joined_image_tags = "".join(image_tags)
@@ -121,7 +128,10 @@ def generate(id):
     for key, value in form_data.items():
         data[key] = value
 
-    prompt = f"Genereer een fotorealistische afbeelding met respect voor lichaamsverhoudingen voor een evenement met als titel '{data['naam-evenement']}' het evenement kan als volgt beschreven worden '{data['beschrijving']}' op de afbeeldingen moeten personen van de leeftijdscategorie '{data['geschikt-voor']}' te zien zijn met een gemengde etnische afkomst op de afbeeldingen moet je zien dat het {'winter' if get_season(data['begindatum']) == 'winter' else 'zomer' if get_season(data['begindatum']) == 'summer' else 'herfst' if get_season(data['begindatum']) == 'autumn' else 'lente'} is"
+    pre_prompt = "wide angle shot, daylight, warm-toned, 35mm, --ar 4:3, --s 250, natural lighting, realistic faces, realistic bodies, sharp focus, sport shooting, dynamic range, wide shot, "
+    input_prompt = f"Evenement voor '{data['naam-evenement']}', evenementbeschrijving '{data['beschrijving']}' personen van leeftijdscategorie '{data['geschikt-voor']}', personen van diverse etnische afkomst, weersomstandigheden zijn volgens het seizoen {'winter' if get_season(data['begindatum']) == 'winter' else 'zomer' if get_season(data['begindatum']) == 'summer' else 'herfst' if get_season(data['begindatum']) == 'autumn' else 'lente'},"
+    base_prompt = f"{pre_prompt}, {input_prompt}"
+    prompt = GoogleTranslator(source="nl", target="en").translate(base_prompt)
 
     print(endpoint)
     image = {
@@ -129,7 +139,7 @@ def generate(id):
         "endpoint": endpoint,
     }
 
-    return f'<div id="{image["endpoint"]}§{index}" style="display: flex; flex-direction: column; width: 100%"><img src="{image["url"]}" /><p>{image["endpoint"]}</p><button type="submit" hx-post="/{image["endpoint"]}§{index}" hx-target="#{image["endpoint"]}§{index}">nieuw</button></div>'
+    return f'<div id="{image["endpoint"]}§{index}" style="display: flex; flex-direction: column; width: 100%"><img src="{image["url"]}" /><p>{image["endpoint"]}</p><button type="submit" hx-post="/{image["endpoint"]}§{index}" hx-target="#{image["endpoint"]}§{index}"><svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="#0ea5e9"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-reload"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747" /><path d="M20 4v5h-5" /></svg></button></div>'
 
 
 if __name__ == "__main__":

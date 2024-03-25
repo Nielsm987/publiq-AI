@@ -14,6 +14,7 @@ app = Flask(__name__)
 ENDPOINTS = [
     {"name": "fooocus", "url": "https://fal.run/fal-ai/fooocus"},
     {"name": "fast-sdxl", "url": "https://fal.run/fal-ai/fast-sdxl"},
+    {"name": "playground-v25", "url": "https://fal.run/fal-ai/playground-v25"},
 ]
 
 PRE_PROMPT = "wide angle shot, daylight, warm-toned, 35mm, --ar 4:3, --s 250, natural lighting, realistic faces, realistic bodies, sharp focus, sport shooting, dynamic range, wide shot, "
@@ -77,7 +78,10 @@ def index():
         prompt = translate_prompt(base_prompt)
         image_urls = [
             {"url": generate_image_url(prompt, "fooocus"), "endpoint": "fooocus"},
-            {"url": generate_image_url(prompt, "fooocus"), "endpoint": "fooocus"},
+            {
+                "url": generate_image_url(prompt, "playground-v25"),
+                "endpoint": "playground-v25",
+            },
             {"url": generate_image_url(prompt, "fast-sdxl"), "endpoint": "fast-sdxl"},
         ]
         return (
